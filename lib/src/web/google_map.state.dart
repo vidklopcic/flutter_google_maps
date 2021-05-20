@@ -12,8 +12,7 @@ import 'package:flutter/scheduler.dart' show SchedulerBinding;
 import 'package:uuid/uuid.dart';
 import 'package:flinq/flinq.dart';
 import 'package:google_maps/google_maps.dart';
-import 'package:google_directions_api/google_directions_api.dart'
-    show GeoCoord, GeoCoordBounds;
+import 'package:google_directions_api/google_directions_api.dart' show GeoCoord, GeoCoordBounds;
 
 import 'utils.dart';
 import '../core/google_map.dart';
@@ -171,8 +170,7 @@ class GoogleMapState extends GoogleMapStateBase {
         }
 
         int doubleToInt(double value) => (value * 100000).truncate();
-        final id =
-            'position${doubleToInt(position.latitude)}${doubleToInt(position.longitude)}';
+        final id = 'position${doubleToInt(position.latitude)}${doubleToInt(position.longitude)}';
 
         if (_infos[key] == null) {
           print(id);
@@ -181,8 +179,7 @@ class GoogleMapState extends GoogleMapStateBase {
               : '<p id="$id">$info${infoSnippet.isNotEmpty == true ? '<p>$infoSnippet</p>' : ''}</p>';
 
           _infos[key] = InfoWindow(InfoWindowOptions()..content = _info);
-          _subscriptions.add(
-              _infos[key].onCloseclick.listen((_) => _infoState[key] = false));
+          _subscriptions.add(_infos[key].onCloseclick.listen((_) => _infoState[key] = false));
         }
 
         if (!(_infoState[key] ?? false)) {
@@ -190,10 +187,8 @@ class GoogleMapState extends GoogleMapStateBase {
           if (_infoState[key] == null) {
             await Future.delayed(const Duration(milliseconds: 100));
 
-            final infoElem = querySelector('flt-platform-view')
-                .shadowRoot
-                .getElementById('$htmlId')
-                .querySelector('#$id');
+            final infoElem =
+                querySelector('flt-platform-view').shadowRoot.getElementById('$htmlId').querySelector('#$id');
 
             infoElem.addEventListener('click', (event) => onInfoWindowTap());
           }
@@ -290,16 +285,12 @@ class GoogleMapState extends GoogleMapStateBase {
     _directions.putIfAbsent(
       '${origin}_$destination',
       () {
-        DirectionsRenderer direction = DirectionsRenderer(
-            DirectionsRendererOptions()..suppressMarkers = true);
+        DirectionsRenderer direction = DirectionsRenderer(DirectionsRendererOptions()..suppressMarkers = true);
         direction.map = _map;
 
         final request = DirectionsRequest()
-          ..origin = origin is GeoCoord
-              ? LatLng(origin.latitude, origin.longitude)
-              : origin
-          ..destination =
-              destination is GeoCoord ? destination.toLatLng() : destination
+          ..origin = origin is GeoCoord ? LatLng(origin.latitude, origin.longitude) : origin
+          ..destination = destination is GeoCoord ? destination.toLatLng() : destination
           ..travelMode = TravelMode.DRIVING;
         directionsService.route(
           request,
@@ -311,9 +302,7 @@ class GoogleMapState extends GoogleMapStateBase {
 
               final startLatLng = leg?.startLocation;
               if (startLatLng != null) {
-                if (startIcon != null ||
-                    startInfo != null ||
-                    startLabel != null) {
+                if (startIcon != null || startInfo != null || startLabel != null) {
                   addMarkerRaw(
                     startLatLng.toGeoCoord(),
                     icon: startIcon,
@@ -371,15 +360,11 @@ class GoogleMapState extends GoogleMapStateBase {
 
     var value = _directions.remove('${origin}_$destination');
     value?.map = null;
-    final start = value
-        ?.directions?.routes?.firstOrNull?.legs?.firstOrNull?.startLocation
-        ?.toGeoCoord();
+    final start = value?.directions?.routes?.firstOrNull?.legs?.firstOrNull?.startLocation?.toGeoCoord();
     if (start != null) {
       removeMarker(start);
     }
-    final end = value
-        ?.directions?.routes?.firstOrNull?.legs?.lastOrNull?.endLocation
-        ?.toGeoCoord();
+    final end = value?.directions?.routes?.firstOrNull?.legs?.lastOrNull?.endLocation?.toGeoCoord();
     if (end != null) {
       removeMarker(end);
     }
@@ -390,15 +375,11 @@ class GoogleMapState extends GoogleMapStateBase {
   void clearDirections() {
     for (var direction in _directions.values) {
       direction?.map = null;
-      final start = direction
-          ?.directions?.routes?.firstOrNull?.legs?.firstOrNull?.startLocation
-          ?.toGeoCoord();
+      final start = direction?.directions?.routes?.firstOrNull?.legs?.firstOrNull?.startLocation?.toGeoCoord();
       if (start != null) {
         removeMarker(start);
       }
-      final end = direction
-          ?.directions?.routes?.firstOrNull?.legs?.lastOrNull?.endLocation
-          ?.toGeoCoord();
+      final end = direction?.directions?.routes?.firstOrNull?.legs?.lastOrNull?.endLocation?.toGeoCoord();
       if (end != null) {
         removeMarker(end);
       }
@@ -650,15 +631,15 @@ class GoogleMapState extends GoogleMapStateBase {
         final elem = DivElement()
           ..id = htmlId
           ..style.width = '100%'
+          ..style.zIndex = '10'
           ..style.height = '100%'
-          ..style.border = 'none';
+          ..style.border = 'none'
+          ..style.zIndex = '999';
 
         _map = GMap(elem, _mapOptions);
 
-        _subscriptions.add(_map.onClick.listen(
-            (event) => widget.onTap?.call(event?.latLng?.toGeoCoord())));
-        _subscriptions.add(_map.onRightclick.listen(
-            (event) => widget.onLongPress?.call(event?.latLng?.toGeoCoord())));
+        _subscriptions.add(_map.onClick.listen((event) => widget.onTap?.call(event?.latLng?.toGeoCoord())));
+        _subscriptions.add(_map.onRightclick.listen((event) => widget.onLongPress?.call(event?.latLng?.toGeoCoord())));
 
         return elem;
       });
@@ -666,10 +647,8 @@ class GoogleMapState extends GoogleMapStateBase {
 
     return LayoutBuilder(
       builder: (context, constraints) => GestureDetector(
-        onVerticalDragUpdate:
-            widget.webPreferences.dragGestures ? null : (_) {},
-        onHorizontalDragUpdate:
-            widget.webPreferences.dragGestures ? null : (_) {},
+        onVerticalDragUpdate: widget.webPreferences.dragGestures ? null : (_) {},
+        onHorizontalDragUpdate: widget.webPreferences.dragGestures ? null : (_) {},
         child: Container(
           constraints: BoxConstraints(maxHeight: constraints.maxHeight),
           child: HtmlElementView(viewType: htmlId),
